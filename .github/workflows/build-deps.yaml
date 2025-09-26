@@ -1,8 +1,12 @@
 name: Build static deps (libffi, SDL2)
 
 on:
-  push:
-  pull_request:
+  workflow_call:
+    inputs:
+      os:
+        description: "Runner label (e.g., ubuntu-latest, macos-latest)"
+        required: true
+        type: string
 
 env:
   LIBFFI_VERSION: "3.5.2"
@@ -10,12 +14,7 @@ env:
 
 jobs:
   deps:
-    name: Build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ inputs.os }}
     
     env:
       PREFIX: ${{ github.workspace }}/third_party/pfx
@@ -112,3 +111,10 @@ jobs:
           name: static-deps-${{ runner.os }}
           path: ${{ env.PREFIX }}
           if-no-files-found: error
+
+      - id: export-paths
+        name: Export include/lib/pkg-config paths
+        run: |
+          echo "c_include_path=${PREFIX}/include" >> "$GITHUB_OUTPUT"
+          echo "library_path=${PREFIX}/lib" >> "$GITHUB_OUTPUT"
+          echo "pkg_config_path=${PREFIX}/lib/pkgconfig" >> "$GITHUB_OUTPUT"

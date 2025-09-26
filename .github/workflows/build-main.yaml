@@ -1,0 +1,45 @@
+name: Build main (uses deps)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  deps:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    uses: ./.github/workflows/build-deps.yml
+    with:
+      os: ${{ matrix.os }}
+
+  main:
+    needs: deps
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    env:
+      C_INCLUDE_PATH:  ${{ needs.deps.outputs.c_include_path }}
+      LIBRARY_PATH:    ${{ needs.deps.outputs.library_path }}
+      PKG_CONFIG_PATH: ${{ needs.deps.outputs.pkg_config_path }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download deps artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: static-deps-${{ runner.os }}
+          path: third_party/prefix
+
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+
+      - run: opam install . --deps-only --with-test
+      - run: opam exec -- dune build --profile=static
