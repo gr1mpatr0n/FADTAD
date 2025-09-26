@@ -1,0 +1,5 @@
+_build
+.vscode
+
+# Even though these should technically be committed, OCaml "lockfiles" are architecture specific...
+*.lock

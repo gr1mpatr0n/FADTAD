@@ -1,0 +1,10 @@
+(env
+ (static
+  (flags
+   (:standard -w -27 -cclib -static))))
+
+(executable
+ (public_name gnuplotscatter)
+ (flags :standard -w -27)
+ (name main)
+ (libraries gnuplotscatter gnuplot tsdl))
