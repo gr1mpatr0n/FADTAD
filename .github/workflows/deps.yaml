@@ -72,6 +72,14 @@ jobs:
           make install
           test -f "${PREFIX}/lib/libffi.a"
       
+      - name: Download SDL2
+        if: steps.cache-prefix.outputs.cache-hit != 'true'
+        working-directory: ${{ env.SRC }}
+        run: |
+          set -euxo pipefail
+          curl -L "https://github.com/libsdl-org/SDL/releases/download/release-${SDL2_VERSION}/SDL2-${SDL2_VERSION}.tar.gz" -o sdl2.tar.gz
+          tar -xzf sdl2.tar.gz
+
       - name: Configure SDL2 (CMake, static)
         if: steps.cache-prefix.outputs.cache-hit != 'true'
         run: |
