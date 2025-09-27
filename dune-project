@@ -1,6 +1,7 @@
 (lang dune 3.20)
+(using menhir 3.0)
 
-(name gnuplotscatter)
+(name calc)
 
 (generate_opam_files true)
 
@@ -16,13 +17,13 @@
 (documentation https://url/to/documentation)
 
 (package
- (name gnuplotscatter)
+ (name calc)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends 
     ocaml
     ocaml-option-static
-    ocaml-option-no-compression
+;;    ocaml-option-no-compression - buggy? see: https://github.com/ocaml/opam-repository/issues/28600
     ocaml-option-flambda
     gnuplot
     tsdl)

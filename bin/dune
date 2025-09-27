@@ -1,10 +1,37 @@
-(env
- (static
-  (flags
-   (:standard -w -27 -cclib -static))))
+(ocamllex
+   (modules lexer)
+)
+
+(menhir
+   (modules parser)
+   (flags -la 2 -lc 2 -O 2 --comment --dump-resolved)
+)
 
 (executable
- (public_name gnuplotscatter)
- (flags :standard -w -27)
- (name main)
- (libraries gnuplotscatter gnuplot tsdl))
+   (public_name calc)
+   (name calc)
+)
+
+(rule 
+   (with-stdout-to calc.out
+   (with-stdin-from calc.in
+      (run ./calc.exe)
+   ))
+)
+
+(rule
+   (alias test)
+   (action (diff calc.exp calc.out))
+)
+
+(rule
+   (with-stdout-to calc1.out
+   (with-stdin-from calc1.in
+      (run ./calc.exe)
+   ))
+)
+
+(rule
+   (alias test)
+   (action (diff calc1.exp calc1.out))
+)
